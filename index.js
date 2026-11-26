@@ -12,8 +12,8 @@ const API_ID = parseInt(process.env.API_ID);
 const API_HASH = process.env.API_HASH;
 const SESSION_FILE = path.join(DATA_DIR, 'session.txt');
 
-// Create /data folder if not exists
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+// Create /data folder if not exist
+fs.mkdirSync('./data', { recursive: true })
 
 // Load session
 let stringSession = new StringSession('');
