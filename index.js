@@ -7,20 +7,23 @@ const path = require('path');
 const app = express();
 app.use(express.json());
 
-const DATA_DIR = process.env.DATA_DIR || '/data';
+const DATA_DIR = './data';
 const API_ID = parseInt(process.env.API_ID);
 const API_HASH = process.env.API_HASH;
 const SESSION_FILE = path.join(DATA_DIR, 'session.txt');
 
-// Create /data folder if not exist
-fs.mkdirSync('./data', { recursive: true })
+// Create data folder
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+  console.log('Created', DATA_DIR);
+}
 
 // Load session
 let stringSession = new StringSession('');
 if (fs.existsSync(SESSION_FILE)) {
   const saved = fs.readFileSync(SESSION_FILE, 'utf-8');
   stringSession = new StringSession(saved);
-  console.log('Loaded session from /data');
+  console.log('Loaded session from', SESSION_FILE);
 }
 
 const client = new TelegramClient(stringSession, API_ID, API_HASH, {
@@ -40,11 +43,11 @@ async function start() {
 start();
 
 app.get('/', (req, res) => {
-  res.send('Wazzup MTProto Service Running - session at /data');
+  res.send('Wazzup MTProto Service Running - session at ./data');
 });
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', sessionExists: fs.existsSync(SESSION_FILE) });
+  res.json({ status: 'ok', sessionExists: fs.existsSync(SESSION_FILE), path: SESSION_FILE });
 });
 
 const PORT = process.env.PORT || 10000;
